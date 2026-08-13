@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visuals — how things work</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0b0e;
+        --card: #16161b;
+        --card-hover: #1d1d24;
+        --line: #2a2a31;
+        --fg: #e6e6e0;
+        --muted: #8a8a86;
+        --accent: #ffce6b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        padding: 64px 20px 80px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      header {
+        margin-bottom: 40px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 26px;
+        letter-spacing: -0.01em;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 60ch;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 18px 20px;
+        transition: background 0.15s, border-color 0.15s, transform 0.15s;
+      }
+      a.card:hover {
+        background: var(--card-hover);
+        border-color: #3f3f49;
+        transform: translateY(-2px);
+      }
+      .card--soon {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 3px 7px;
+        border-radius: 5px;
+        margin-bottom: 12px;
+      }
+      .tag--live {
+        background: rgba(255, 206, 107, 0.14);
+        color: var(--accent);
+      }
+      .tag--soon {
+        background: #24242b;
+        color: var(--muted);
+      }
+      footer {
+        margin-top: 44px;
+        color: #5f5f5b;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Visuals</h1>
+        <p>
+          An interactive, zoomable movie of how things work — algorithms, protocols, and the
+          journey of a message across the web. Built with pure CSS and Stimulus.
+        </p>
+      </header>
+
+      <div class="grid">
+        <a class="card" href="./visualizations/sudoku/index.html">
+          <span class="tag tag--live">Live</span>
+          <h2>Sudoku · backtracking</h2>
+          <p>A solver searches, filling squares as split-flaps and erasing them on backtrack. Switch algorithms and watch the thrash change.</p>
+        </a>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>RSA key exchange</h2>
+          <p>The math behind asymmetric keys, one operation at a time.</p>
+        </div>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>DNS lookup</h2>
+          <p>A name resolves, hop by hop, from resolver to authoritative server.</p>
+        </div>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>TCP handshake</h2>
+          <p>SYN, SYN-ACK, ACK — a connection comes to life.</p>
+        </div>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>HTTPS certificate validation</h2>
+          <p>Walking the chain of trust from leaf to root CA.</p>
+        </div>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>HTTP through Rails</h2>
+          <p>A request descends the middleware stack to your controller.</p>
+        </div>
+
+        <div class="card card--soon">
+          <span class="tag tag--soon">Soon</span>
+          <h2>Typing google.com</h2>
+          <p>The capstone: every chapter above, stitched into one journey.</p>
+        </div>
+      </div>
+
+      <footer>github pages · pure CSS + Stimulus</footer>
+    </div>
+  </body>
+</html>

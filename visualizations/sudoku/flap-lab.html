@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Split-flap lab</title>
+    <link rel="stylesheet" href="./styles/flap.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+        padding: 40px 20px;
+        background: #0d0d10;
+        color: #cfcfca;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+      h1 {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #8a8a86;
+        margin: 0;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        max-width: 620px;
+      }
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid #33333a;
+        background: #1b1b20;
+        color: #dcdcd6;
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: #55555f;
+      }
+      .legend {
+        font-size: 12px;
+        color: #6f6f6b;
+        max-width: 560px;
+        text-align: center;
+        line-height: 1.6;
+      }
+      .swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        vertical-align: middle;
+        margin: 0 3px 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Split-flap reel lab</h1>
+
+    <!-- one big cell for close inspection -->
+    <div class="row" id="hero">
+      <div data-controller="flap" data-flap-value-value="0"></div>
+    </div>
+
+    <!-- a small row to eyeball a cascade / timing across cells -->
+    <div class="row" id="strip">
+      <div data-controller="flap" data-flap-value-value="0" style="--flap-w:44px;--flap-h:60px;--flap-font:36px"></div>
+      <div data-controller="flap" data-flap-value-value="0" style="--flap-w:44px;--flap-h:60px;--flap-font:36px"></div>
+      <div data-controller="flap" data-flap-value-value="0" style="--flap-w:44px;--flap-h:60px;--flap-font:36px"></div>
+      <div data-controller="flap" data-flap-value-value="0" style="--flap-w:44px;--flap-h:60px;--flap-font:36px"></div>
+      <div data-controller="flap" data-flap-value-value="0" style="--flap-w:44px;--flap-h:60px;--flap-font:36px"></div>
+    </div>
+
+    <div class="controls">
+      <button data-act="fill9">Fill hero → 9 (forward)</button>
+      <button data-act="fill3">Fill hero → 3</button>
+      <button data-act="erase">Erase hero → blank (backtrack)</button>
+      <button data-act="down1">Advance hero +1</button>
+      <button data-act="stripFill">Strip: fill random (forward)</button>
+      <button data-act="stripErase">Strip: erase all (backtrack)</button>
+      <button data-act="demo">Auto demo loop</button>
+    </div>
+
+    <p class="legend">
+      <span class="swatch" style="background: rgba(120,200,255,.6)"></span>forward / fill — counts up, flaps down
+      <span class="swatch" style="background: rgba(255,140,120,.7)"></span>backtrack / erase — counts down, flaps up
+    </p>
+
+    <script type="module" src="./flap-lab.js"></script>
+  </body>
+</html>

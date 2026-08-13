@@ -1,0 +1,210 @@
+/* Authentic Solari-style split-flap character cell.
+ *
+ * Anatomy — four absolutely-positioned layers stacked in one cell:
+ *   .flap__half--top     static upper half, shows the top of the settled glyph
+ *   .flap__half--bottom  static lower half, shows the bottom of the settled glyph
+ *   .flap__leaf--top     hinged upper leaf (animates), hinge on the seam
+ *   .flap__leaf--bottom  hinged lower leaf (animates), hinge on the seam
+ *
+ * Each layer clips (overflow:hidden) a full-cell-height glyph so the top layers
+ * reveal the glyph's top half and the bottom layers reveal its bottom half; the
+ * split lines up because every glyph box is the full cell height with matching
+ * line-height. One flip is two hinged leaves rotating in sequence (see keyframes);
+ * the controller drives the character swaps and chains flips into a reel.
+ */
+
+.flap {
+  /* geometry + theme — override per board size */
+  --flap-w: 64px;
+  --flap-h: 88px;
+  --flap-font: 54px;
+  --flap-radius: 7px;
+  --flap-seam: rgba(0, 0, 0, 0.55);
+  --flap-bg-top: #26262c;
+  --flap-bg-bottom: #1a1a1f;
+  --flap-fg: #f4f3ee;
+  --flap-dur: 150ms;
+
+  position: relative;
+  display: inline-block;
+  width: var(--flap-w);
+  height: var(--flap-h);
+  perspective: 320px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: var(--flap-font);
+  font-weight: 650;
+  color: var(--flap-fg);
+  border-radius: var(--flap-radius);
+  background: var(--flap-bg-bottom);
+}
+
+.flap__half,
+.flap__leaf {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+/* upper layers */
+.flap__half--top,
+.flap__leaf--top {
+  top: 0;
+  border-radius: var(--flap-radius) var(--flap-radius) 0 0;
+  background: linear-gradient(#2c2c33, var(--flap-bg-top));
+  border-bottom: 1px solid var(--flap-seam);
+}
+
+/* lower layers */
+.flap__half--bottom,
+.flap__leaf--bottom {
+  bottom: 0;
+  border-radius: 0 0 var(--flap-radius) var(--flap-radius);
+  background: linear-gradient(var(--flap-bg-bottom), #131317);
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+/* the glyph: a full-cell-height box, clipped by each half/leaf */
+.flap__char {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 200%; /* 200% of a half == full cell height */
+  line-height: var(--flap-h);
+  text-align: center;
+  user-select: none;
+}
+.flap__half--top .flap__char,
+.flap__leaf--top .flap__char {
+  top: 0;
+}
+.flap__half--bottom .flap__char,
+.flap__leaf--bottom .flap__char {
+  bottom: 0;
+}
+
+/* leaves hinge on the seam and sit above the statics; hidden at rest */
+.flap__half {
+  z-index: 1;
+}
+.flap__leaf {
+  z-index: 2;
+  opacity: 0;
+}
+.flap__leaf--top {
+  transform-origin: center bottom;
+}
+.flap__leaf--bottom {
+  transform-origin: center top;
+}
+.flap--down .flap__leaf,
+.flap--up .flap__leaf {
+  opacity: 1;
+}
+
+/* a soft shadow that sweeps as a leaf moves, for depth */
+.flap__leaf::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* DOWN flip (forward / fill): top leaf falls away, then bottom leaf drops in. */
+@keyframes flapDownTop {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+@keyframes flapDownBottom {
+  0%,
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+.flap--down .flap__leaf--top {
+  animation: flapDownTop var(--flap-dur) ease-in forwards;
+}
+.flap--down .flap__leaf--bottom {
+  animation: flapDownBottom var(--flap-dur) ease-out forwards;
+}
+.flap--down .flap__leaf--top::after {
+  animation: shadeIn var(--flap-dur) ease-in forwards;
+}
+.flap--down .flap__leaf--bottom::after {
+  animation: shadeOut var(--flap-dur) ease-out forwards;
+}
+
+/* UP flip (backtrack / erase): bottom leaf lifts, then top leaf drops down. */
+@keyframes flapUpBottom {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50%,
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+@keyframes flapUpTop {
+  0%,
+  50% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+.flap--up .flap__leaf--bottom {
+  animation: flapUpBottom var(--flap-dur) ease-in forwards;
+}
+.flap--up .flap__leaf--top {
+  animation: flapUpTop var(--flap-dur) ease-out forwards;
+}
+.flap--up .flap__leaf--bottom::after {
+  animation: shadeIn var(--flap-dur) ease-in forwards;
+}
+.flap--up .flap__leaf--top::after {
+  animation: shadeOut var(--flap-dur) ease-out forwards;
+}
+
+@keyframes shadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.42;
+  }
+}
+@keyframes shadeOut {
+  0% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Direction tint: a hairline accent so forward vs backtrack reads instantly. */
+.flap--down {
+  box-shadow: 0 0 0 1px rgba(120, 200, 255, 0.35);
+}
+.flap--up {
+  box-shadow: 0 0 0 1px rgba(255, 140, 120, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flap__leaf {
+    display: none;
+  }
+}

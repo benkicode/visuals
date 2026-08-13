@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sudoku — backtracking, split-flap</title>
+    <link rel="stylesheet" href="./styles/flap.css" />
+    <link rel="stylesheet" href="./styles/board.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 26px;
+        padding: 36px 16px 60px;
+        background: #0b0b0e;
+        color: #cfcfca;
+        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      }
+      h1 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #8a8a86;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sudoku · backtracking search</h1>
+
+    <div class="sudoku" data-controller="board">
+      <div class="board" data-board-target="grid"></div>
+
+      <div class="controls">
+        <div class="controls__row">
+          <button class="primary" data-board-target="play" data-action="board#toggle">Play</button>
+          <button data-action="board#stepBack">◀ Step</button>
+          <button data-action="board#stepForward">Step ▶</button>
+          <button data-action="board#restart">Restart</button>
+          <button data-action="board#toEnd">Skip to end</button>
+        </div>
+
+        <input
+          class="scrub"
+          type="range"
+          min="0"
+          max="1"
+          value="0"
+          autocomplete="off"
+          data-board-target="scrub"
+          data-action="input->board#onScrub"
+        />
+
+        <div class="controls__row">
+          <label>
+            Algorithm
+            <select autocomplete="off" data-board-target="strategy" data-action="change->board#onStrategy"></select>
+          </label>
+          <label>
+            Puzzle
+            <select autocomplete="off" data-board-target="puzzle" data-action="change->board#onPuzzle"></select>
+          </label>
+          <label>
+            Speed
+            <input
+              type="range"
+              min="0.5"
+              max="4"
+              step="0.5"
+              value="1"
+              autocomplete="off"
+              data-board-target="speed"
+              data-action="input->board#onSpeed"
+            />
+          </label>
+        </div>
+
+        <div class="status" data-board-target="status"></div>
+
+        <div class="legend">
+          <span><span class="swatch swatch--given"></span> given clue</span>
+          <span><span class="swatch swatch--algo">7</span> algorithm fill</span>
+          <span><span class="swatch swatch--fill"></span> placing (flaps down)</span>
+          <span><span class="swatch swatch--erase"></span> backtracking (flaps up)</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

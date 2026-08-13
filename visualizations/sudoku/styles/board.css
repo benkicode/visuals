@@ -1,0 +1,185 @@
+/* 9x9 board: grid of cells, with a line overlay drawn ABOVE the cells so the
+ * split-flap cards can't cover the grid lines. Givens are flat and static;
+ * algorithm cells are split-flaps (see flap.css) tinted a distinct amber. */
+
+.sudoku {
+  --cell: 54px;
+  --line: #34343c;
+  --line-strong: #6d6d7a;
+  --given-fg: #e9e9e3;
+  --algo-fg: #ffce6b;
+  color: #cfcfca;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(9, var(--cell));
+  grid-template-rows: repeat(9, var(--cell));
+  width: max-content;
+  background: #0d0d10;
+  border: 2px solid var(--line-strong);
+  border-radius: 4px;
+}
+
+/* thin line every cell + strong line every third cell, painted over the cells */
+.board::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to right, transparent 0 calc(var(--cell) - 1px), var(--line) calc(var(--cell) - 1px) var(--cell)),
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--cell) - 1px), var(--line) calc(var(--cell) - 1px) var(--cell)),
+    repeating-linear-gradient(to right, transparent 0 calc(var(--cell) * 3 - 2px), var(--line-strong) calc(var(--cell) * 3 - 2px) calc(var(--cell) * 3)),
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--cell) * 3 - 2px), var(--line-strong) calc(var(--cell) * 3 - 2px) calc(var(--cell) * 3));
+}
+
+.cell {
+  position: relative;
+  width: var(--cell);
+  height: var(--cell);
+  box-sizing: border-box;
+}
+
+.cell--given {
+  display: grid;
+  place-items: center;
+  background: #191920;
+  color: var(--given-fg);
+  font-weight: 750;
+  font-size: 30px;
+}
+
+/* algorithm cell == a flap; square it off and tint it */
+.cell--algo {
+  --flap-w: var(--cell);
+  --flap-h: var(--cell);
+  --flap-font: 30px;
+  --flap-radius: 0;
+  --flap-fg: var(--algo-fg);
+}
+
+/* active-cell indicator (also encodes direction, matching the flap tint) */
+.cell.is-fill,
+.cell.is-erase {
+  z-index: 3;
+}
+.cell.is-fill {
+  outline: 2px solid rgba(120, 200, 255, 0.9);
+  outline-offset: -2px;
+}
+.cell.is-erase {
+  outline: 2px solid rgba(255, 140, 120, 0.95);
+  outline-offset: -2px;
+}
+
+/* ---- controls ---- */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(520px, 92vw);
+}
+.controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.controls button {
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 13px;
+  border-radius: 8px;
+  border: 1px solid #33333a;
+  background: #1b1b20;
+  color: #dcdcd6;
+  cursor: pointer;
+}
+.controls button:hover {
+  border-color: #55555f;
+}
+.controls button.primary {
+  background: #2b2b33;
+  border-color: #5a5a66;
+  min-width: 92px;
+}
+.controls select {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #33333a;
+  background: #1b1b20;
+  color: #dcdcd6;
+}
+.controls label {
+  font-size: 12px;
+  color: #8a8a86;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.controls input[type="range"] {
+  accent-color: #ffce6b;
+}
+.scrub {
+  width: 100%;
+}
+.status {
+  font-size: 12.5px;
+  color: #9a9a95;
+  text-align: center;
+  min-height: 1.2em;
+  font-variant-numeric: tabular-nums;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  font-size: 12px;
+  color: #7a7a76;
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.swatch {
+  width: 22px;
+  height: 16px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.swatch--given {
+  background: #191920;
+  border: 1px solid #34343c;
+}
+.swatch--algo {
+  background: #1a1a1f;
+  color: var(--algo-fg);
+  font-weight: 750;
+  font-size: 11px;
+  text-align: center;
+  line-height: 16px;
+}
+.swatch--fill {
+  background: #16161a;
+  outline: 2px solid rgba(120, 200, 255, 0.9);
+  outline-offset: -2px;
+}
+.swatch--erase {
+  background: #16161a;
+  outline: 2px solid rgba(255, 140, 120, 0.95);
+  outline-offset: -2px;
+}
