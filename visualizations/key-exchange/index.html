@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Key exchange — Diffie–Hellman</title>
+    <link rel="stylesheet" href="./styles/keyexchange.css" />
+    <style>
+      body {
+        margin: 0;
+        box-sizing: border-box;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 30px 16px 150px;
+        background: #0b0b0e;
+        color: #cfcfca;
+        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      }
+      h1 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #8a8a86;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>How a secure channel appears · Diffie–Hellman</h1>
+
+    <div class="exchange" data-controller="exchange">
+      <div class="narration" data-exchange-target="narration"></div>
+
+      <div class="stage">
+        <!-- the TLS 1.3 handshake as a sequence of transaction cards -->
+        <div class="panel panel--l0 panel--active" data-exchange-target="panel">
+          <div class="browserbar">
+            <span class="browser__lock"></span>
+            <span class="browser__url"></span>
+            <span class="browser__cert">🛡 certificate verified</span>
+          </div>
+          <div class="params-note">
+            public parameters — group <b>ffdhe2048</b> (RFC 7919, negotiated): prime <b>p = 23</b> · base <b>g = 2</b> — fixed &amp; public (real p is 2048-bit)
+          </div>
+          <div class="flow">
+            <span class="colhead colhead--client">browser</span>
+            <span class="colhead colhead--net">network</span>
+            <span class="colhead colhead--server">server</span>
+
+            <section class="tcard area-kgc">
+              <h3>generate keypair</h3>
+              <div class="kfield">
+                <div class="trow trow--secret"><span class="trow__label">private key</span><span class="val" data-field="caSecret"></span><span class="trow__var trow__var--secret">a</span></div>
+                <div class="trow__help">random, 2 ≤ a ≤ p−2 · 2048-bit in ffdhe2048</div>
+              </div>
+              <div class="kfield">
+                <div class="trow"><span class="trow__label">public key</span><span class="val" data-field="caPub"></span><span class="trow__var">A</span></div>
+                <div class="trow__help">gᵃ mod p</div>
+              </div>
+            </section>
+            <section class="tcard area-kgs">
+              <h3>generate keypair</h3>
+              <div class="kfield">
+                <div class="trow trow--secret"><span class="trow__label">private key</span><span class="val" data-field="sbSecret"></span><span class="trow__var trow__var--secret">b</span></div>
+                <div class="trow__help">random, 2 ≤ b ≤ p−2 · 2048-bit in ffdhe2048</div>
+              </div>
+              <div class="kfield">
+                <div class="trow"><span class="trow__label">public key</span><span class="val" data-field="sbPub"></span><span class="trow__var">B</span></div>
+                <div class="trow__help">gᵇ mod p</div>
+              </div>
+            </section>
+
+            <section class="tcard area-ch">
+              <h3>ClientHello</h3>
+              <div class="trow"><span class="trow__label">public key</span><span class="val" data-field="chPub"></span><span class="trow__var">A</span></div>
+              <div class="trow"><span class="trow__label">supported group</span><span class="trow__val">ffdhe2048</span></div>
+            </section>
+            <div class="netwire netwire--right area-chwire"><span class="netwire__msg">A = 18, ffdhe2048</span></div>
+
+            <div class="netwire netwire--left area-shwire"><span class="netwire__msg">B = 16</span></div>
+            <section class="tcard area-sh">
+              <h3>ServerHello</h3>
+              <div class="trow"><span class="trow__label">public key</span><span class="val" data-field="shPub"></span><span class="trow__var">B</span></div>
+              <div class="trow__help">key share — in the clear</div>
+            </section>
+
+            <div class="eve-watch area-eve">👁 Eve saw A = 18, B = 16 — but reversing gᵃ mod p is the discrete-log problem, infeasible for a 2048-bit p</div>
+
+            <div class="derive-group area-derivegroup">
+              <section class="tcard">
+                <h3>derive secret</h3>
+                <div class="dchain"><span>Bᵃ mod p</span><span>= 16⁶ mod 23</span></div>
+                <div class="trow trow--key"><span class="trow__label">shared secret</span><span class="val" data-field="cDerive"></span></div>
+              </section>
+              <div class="derive-why">
+                <span class="derive-why__title">why they match</span>
+                <span>16⁶ = 18¹⁵</span>
+                <span>= 2⁹⁰ mod 23</span>
+                <span class="derive-why__eq">both = g<sup>a·b</sup></span>
+                <span class="derive-why__because">since a·b = b·a</span>
+              </div>
+              <section class="tcard">
+                <h3>derive secret</h3>
+                <div class="dchain"><span>Aᵇ mod p</span><span>= 18¹⁵ mod 23</span></div>
+                <div class="trow trow--key"><span class="trow__label">shared secret</span><span class="val" data-field="sDerive"></span></div>
+              </section>
+            </div>
+
+            <div class="derive-note area-note">both sides arrive at the same secret — 4 — which never crossed the wire</div>
+          </div>
+          <div class="sym">
+            <span class="sym__badge">TLS · symmetric</span>
+            <span class="sym__label">AES-128-GCM (shared secret <span class="sym__secret">4</span>) — bulk data both ways</span>
+          </div>
+          <div class="tlsline">🔒 TLS 1.3 · ffdhe2048 · AES-128-GCM</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="controls__row">
+          <button class="primary" data-exchange-target="play" data-action="exchange#toggle">Play</button>
+          <button data-action="exchange#stepBack">◀ Step</button>
+          <button data-action="exchange#stepForward">Step ▶</button>
+          <button data-action="exchange#restart">Restart</button>
+          <button data-action="exchange#toEnd">Skip to end</button>
+        </div>
+        <input
+          class="scrub"
+          type="range"
+          min="0"
+          max="1"
+          value="0"
+          autocomplete="off"
+          data-exchange-target="scrub"
+          data-action="input->exchange#onScrub"
+        />
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

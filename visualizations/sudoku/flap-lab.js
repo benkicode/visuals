@@ -1,5 +1,5 @@
 import { Application } from "@hotwired/stimulus";
-import FlapController from "./controllers/flap_controller.js";
+import FlapController from "../../shared/controllers/flap_controller.js";
 
 const app = Application.start();
 app.register("flap", FlapController);
@@ -7,9 +7,6 @@ app.register("flap", FlapController);
 const ctrl = (el) => app.getControllerForElementAndIdentifier(el, "flap");
 const hero = () => ctrl(document.querySelector("#hero div"));
 const strip = () => [...document.querySelectorAll("#strip div")].map(ctrl);
-
-// expose for console-driven inspection during development
-window.__lab = { app, hero, strip };
 
 // deterministic pseudo-random so runs are repeatable
 let seed = 7;
