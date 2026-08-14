@@ -1,0 +1,20 @@
+#!/bin/sh
+# Keep debugging harness out of what gets published. Use window.__ globals or
+# `debugger` freely while developing — this gate just stops them being pushed.
+# Scans tracked JS/HTML source only (dist/ and node_modules aren't tracked, so
+# git ls-files already excludes them; measure.js's console output is not harness).
+
+pattern='window\.__|(^|[^[:alnum:]_])debugger([^[:alnum:]_]|$)'
+
+files=$(git ls-files -- '*.js' '*.html')
+[ -z "$files" ] && exit 0
+
+harness=$(printf '%s\n' "$files" | xargs grep -nHE "$pattern" 2>/dev/null)
+
+if [ -n "$harness" ]; then
+  echo "pre-push blocked — remove debugging harness before pushing:" >&2
+  printf '%s\n' "$harness" >&2
+  exit 1
+fi
+
+exit 0

@@ -15,6 +15,7 @@ export default defineConfig({
       input: {
         main: page("./index.html"),
         sudoku: page("./visualizations/sudoku/index.html"),
+        keyExchange: page("./visualizations/key-exchange/index.html"),
       },
     },
   },

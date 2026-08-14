@@ -1,20 +1,26 @@
 import { Controller } from "@hotwired/stimulus";
 
 // Drives one split-flap cell: chains single flips into a reel that counts, in
-// sequence, from the current value to a target and decelerates onto it.
+// sequence, from the current position to a target and decelerates onto it.
 //
-// Values are 0..9 where 0 = blank. Direction couples the counting order to the
-// flip animation:
-//   forward   (fill)  -> count UP   (prev -> value, increasing), leaves flap DOWN
-//   backtrack (erase) -> count DOWN (value -> 0), leaves flap UP
-// Because the solver only ever advances a cell upward while filling and only ever
-// blanks it while backtracking, those are the only two cases we need.
+// `value` is an integer POSITION into `alphabet` (0 = the first face). The default
+// alphabet is sudoku's — position 0 = blank, 1..9 = digits — so the board's digit
+// value doubles as its position. Other reels pass their own alphabet (e.g. a
+// multi-digit number field uses ["", "0".."9"] so a 0 renders as "0", not blank).
+//
+// Direction couples counting order to the flip animation:
+//   forward   -> count UP,   leaves flap DOWN
+//   backtrack -> count DOWN, leaves flap UP
 //
 // The element is self-rendering: give it a bare `<div data-controller="flap">`
 // and it builds its own layers, so a 9x9 board is 81 trivial divs.
 export default class extends Controller {
   static values = {
-    value: { type: Number, default: 0 }, // current glyph (0 = blank)
+    alphabet: {
+      type: Array,
+      default: ["", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    },
+    value: { type: Number, default: 0 }, // current position into alphabet
     duration: { type: Number, default: 150 }, // base per-flip ms
     settle: { type: Number, default: 3 }, // trailing flips that decelerate
     settleFactor: { type: Number, default: 2.4 }, // duration multiplier at the last flip
@@ -39,8 +45,8 @@ export default class extends Controller {
     Object.assign(this, { topHalf, bottomHalf, topLeaf, bottomLeaf });
   }
 
-  glyph(n) {
-    return n === 0 ? "" : String(n);
+  glyph(pos) {
+    return this.alphabetValue[pos] ?? "";
   }
 
   // Rest state: both statics show `n`, leaves cleared.
