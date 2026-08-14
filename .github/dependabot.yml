@@ -1,6 +1,22 @@
 version: 2
 
 updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    registries:
+      - fontawesome-npm
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "npm"]
+    groups:
+      npm-version:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
